@@ -72,15 +72,29 @@ public class SwiftFlutterBranchSdkPlugin: NSObject, FlutterPlugin, FlutterStream
                 NSLog("FBSDKAppLinkUtility not found but branch_enable_facebook_ads set to true. Please be sure you have integrated the Facebook SDK.")
             }
         }
-        
-        let checkPasteboard  = Bundle.infoPlistValue(forKey: "branch_check_pasteboard") as? Bool ?? false
-        print("Branch Clipboard Deferred Deep Linking: \(String(describing:checkPasteboard))");
-        
-        if checkPasteboard {
-            Branch.getInstance().checkPasteboardOnInstall()
+
+        // NativeLink 
+        if #available(iOS 16.0, *) {
+            // Don't check pasteboard on install, instead utilize UIPasteControl
+            // Manually paste value
+            // Branch.getInstance().pasteItemProviders(itemProviders)
         } else if #available(iOS 15.0, *) {
             Branch.getInstance().checkPasteboardOnInstall()
         }
+
+        // check if pasteboard toast will show
+        // if Branch.getInstance().willShowPasteboardToast(){
+            // devlopers can notify the user of what just occurred here if they choose
+        // }
+        
+        // let checkPasteboard  = Bundle.infoPlistValue(forKey: "branch_check_pasteboard") as? Bool ?? false
+        // print("Branch Clipboard Deferred Deep Linking: \(String(describing:checkPasteboard))");
+        
+        // if checkPasteboard {
+        //     Branch.getInstance().checkPasteboardOnInstall()
+        // } else if #available(iOS 15.0, *) {
+        //     Branch.getInstance().checkPasteboardOnInstall()
+        // }
         
         Branch.getInstance().initSession(launchOptions: launchOptions) { (params, error) in
             if error == nil {
